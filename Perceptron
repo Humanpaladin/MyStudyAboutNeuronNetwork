@@ -1,0 +1,65 @@
+# -*- coding: UTF-8 -*-
+
+
+class Perceptron(object):
+    def __init__(self, input_num, activator):
+        self.activator = activator
+        self.weights = [0.0 for _ in range(input_num)]
+        self.bias = 0.0
+
+    def __str__(self):
+        return 'weights:\t%s\nbias:\t%f\n' % (self.weights, self.bias)
+
+    def predict(self, input_vec):
+        prediction = self.activator(
+            reduce(lambda a, b: a+b, map(lambda (x, w): x*w, zip(input_vec, self.weights)), 0.0) + self.bias
+        )
+        return prediction
+
+    def train(self, input_vecs, labels, iteration, rate):
+        for i in range(iteration):
+            print 'iteration:%d' % i
+            print self
+            self._one_iteration(input_vecs, labels, rate)
+
+    def _one_iteration(self, input_vecs, labels, rate):
+        samples = zip(input_vecs, labels)
+        for (input_vec, label) in samples:
+            output = self.predict(input_vec)
+            self._update_weights(input_vec, output, label, rate)
+
+    def _update_weights(self, input_vec, output, label, rate):
+        delta = label - output
+        self.weights = map(lambda (x, w): w + rate * delta * x, zip(input_vec, self.weights))
+        self.bias += rate * delta
+
+
+def f(x):
+    if x >= 0:
+        return 1
+    else:
+        return 0
+
+
+def get_training_data_set():
+    input_vecs = [[1, 1], [1, 0], [0, 1], [0, 0]]
+    labels = [1, 1, 1, 0]
+    return input_vecs, labels
+
+
+def train():
+    p = Perceptron(2, f)
+    input_vecs, labels = get_training_data_set()
+    p.train(input_vecs, labels, 10, 0.1)
+    return p
+
+
+if __name__ == '__main__':
+    perceptron_and = train()
+    print perceptron_and
+    print 'input [0, 0], the output is %d.' % perceptron_and.predict([0, 0])
+    print 'input [1, 0], the output is %d.' % perceptron_and.predict([1, 0])
+    print 'input [0, 1], the output is %d.' % perceptron_and.predict([0, 1])
+    print 'input [1, 1], the output is %d.' % perceptron_and.predict([1, 1])
+    print 'input [-1, -1], the output is %d.' % perceptron_and.predict([-1, -1])
+    print 'input [5, 5], the output is %d.' % perceptron_and.predict([5, 5])
