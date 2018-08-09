@@ -18,7 +18,7 @@ class LinearUnit(Perceptron):   # 定义一个LinearUnit类，继承自Perceptro
         self.bias += rate*delta
     '''
 
-    # update the weights using the Stochastic Gradient Descent#
+    # update the weights using the Batch Gradient Descent#
     def _update_weights(self, input_vec, output, label, rate):
         input_vecs, labels = get_training_data_set()
         outputs = []
