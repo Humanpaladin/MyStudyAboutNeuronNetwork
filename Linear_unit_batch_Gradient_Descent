@@ -1,0 +1,63 @@
+# -*- coding: UTF-8 -*-
+from Perceptron import Perceptron
+
+f = lambda x: x
+
+
+class LinearUnit(Perceptron):   # 定义一个LinearUnit类，继承自Perceptron类#
+    def __init__(self, input_num):  # 重写自己的__init__方法#
+        Perceptron.__init__(self, input_num, f)  # 实际上，还是调用其父类Perceptron的__init__方法。
+        # 注意，此处是类名直接调用方法，不是对象实例调用方法。
+        # 二者的不同在于，实例调用方法的话括号里不用加self，而类名需要在括号里加self#
+        # pass # 或者干脆什么都不重写，直接继承父类的__init__方法#
+
+    # the original update method uses the Stochastic Gradient Descent#
+    '''def _update_weights(self, input_vec, output, label, rate):
+        delta = label - output
+        self.weights = map(lambda (x, w): w + rate*delta*x, zip(input_vec, self.weights))
+        self.bias += rate*delta
+    '''
+
+    # update the weights using the Stochastic Gradient Descent#
+    def _update_weights(self, input_vec, output, label, rate):
+        input_vecs, labels = get_training_data_set()
+        outputs = []
+
+        for input_vec in input_vecs:
+            prediction = self.predict(input_vec)
+            outputs.append(prediction)
+        print labels, outputs
+        delta = sum(map(lambda (label, prediction): label - prediction, zip(labels, outputs)))
+        print delta
+        self.weights = map(lambda (x, w): w + rate*delta*x, zip(input_vec, self.weights))
+        self.bias += rate*delta
+
+
+def get_training_data_set():
+    input_vecs = [[5], [3], [8], [1.4], [10.1]]
+    labels = [5500, 2300, 7600, 1800, 11400]
+    return input_vecs, labels
+
+
+def train_linear_unit():
+    lu = LinearUnit(1)
+    input_vecs, labels = get_training_data_set()
+    lu.train(input_vecs, labels, 10000, 0.001)
+    return lu
+
+
+if __name__ == '__main__':
+    linear_unit = train_linear_unit()
+    print linear_unit
+    print '=== for comparison with the training samples: ==='
+    print 'Work 5 years, monthly salary = %.2f' % linear_unit.predict([5])
+    print 'Work 3 years, monthly salary = %.2f' % linear_unit.predict([3])
+    print 'Work 8 years, monthly salary = %.2f' % linear_unit.predict([8])
+    print 'Work 1.4 years, monthly salary = %.2f' % linear_unit.predict([1.4])
+    print 'Work 10.1 years, monthly salary = %.2f' % linear_unit.predict([10.1])
+    print '=== for prediction:'
+    print 'Work 3.4 years, monthly salary = %.2f' % linear_unit.predict([3.4])
+    print 'Work 15 years, monthly salary = %.2f' % linear_unit.predict([15])
+    print 'Work 1.5 years, monthly salary = %.2f' % linear_unit.predict([1.5])
+
+
